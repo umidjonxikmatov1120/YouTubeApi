@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import render
+from django_filters import filters, Filter
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,9 +16,16 @@ from videos.serializers import VideoSerializer
 class VideoViewset(viewsets.ModelViewSet):
     queryset = Videos.objects.all()
     serializer_class = VideoSerializer
-    filter_backends = [SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['uploaded_at']
-    search_fields = ['title']
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+
+        title = self.request.query_params.get('query', None)
+
+        if title is not None:
+            queryset = queryset.filter(title=title)
+
+        return queryset
 
 
 class TokenView(APIView):
