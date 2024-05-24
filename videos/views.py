@@ -20,7 +20,7 @@ class VideoViewset(viewsets.ModelViewSet):
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
 
-        title = self.request.query_params.get('query', None)
+        title = self.request.query_params.get('queryEAD', None)
 
         if title is not None:
             queryset = queryset.filter(title=title)
